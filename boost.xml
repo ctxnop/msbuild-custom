@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework">
+	<Rule Name="ProjectSettings_boost" PageTemplate="tool" DisplayName="External libraries Settings" SwitchPrefix="/" Order="1">
+		<Rule.Categories>
+			<Category Name="boost-config" DisplayName="Boost" />
+		</Rule.Categories>
+		<Rule.DataSource>
+			<DataSource Persistence="ProjectFile" ItemType="" />
+		</Rule.DataSource>
+		<StringProperty Subtype="folder" Name="BoostIncludeDir" DisplayName="BoostIncludeDir" Description="Specify the Boost include directory" Category="boost-config" />
+		<StringProperty Subtype="folder" Name="BoostLibDir" DisplayName="BoostLibDir" Description="Specify the Boost library directory" Category="boost-config" />
+	</Rule>
+</ProjectSchemaDefinitions>
