@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+
+	<ItemGroup>
+		<PropertyPageSchema Include="$(MSBuildThisFileDirectory)\qt.xml" />
+	</ItemGroup>
+
+	<!-- Groupe de fichiers à compiler-->
+	<ItemGroup>
+		<MocFile Include="**/*.cpp" />
+		<MocFile Include="**/*.cxx" />
+		<MocFile Include="**/*.h" />
+		<MocFile Include="**/*.hpp" />
+	</ItemGroup>
+
+	<!-- Groupe de fichier UI -->
+	<ItemGroup>
+		<UiFile Include="**/*.ui" />
+	</ItemGroup>
+
+	<!-- Groupe de fichier QRC -->
+	<ItemGroup>
+		<QrcFile Include="**/*.qrc" />
+	</ItemGroup>
+
+	<!-- Appel qt-moc sur chaque fichier à compiler -->
+	<Target Name="QtMoc" BeforeTargets="SelectClCompile" Condition="'@(MocFile)'!=''">
+		<MakeDir Directories="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)" />
+		<Exec Command="$(QtBinDir)moc.exe --no-notes -o &quot;$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)moc_%(MocFile.Filename).cpp&quot; &quot;$(ProjectDir)%(MocFile.Identity)&quot;" />
+		
+		<!-- Ajoute le fichier en sortie -->
+		<ItemGroup Condition="'@(MocFile)'!=''">
+			<ClCompile Include="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)moc_%(MocFile.Filename).cpp"/>
+		</ItemGroup>
+	</Target>
+	
+	<!-- Appel qt-uic sur chaque fichier "*.ui" -->
+	<Target Name="QtUic" AfterTargets="QtMoc" BeforeTargets="SelectClCompile" Condition="'@(UiFile)'!=''">
+		<MakeDir Directories="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)" />
+		<Exec Command="$(QtBinDir)uic.exe -o &quot;$(ProjectDir)%(UiFile.RelativeDir)ui_%(UiFile.Filename).h&quot; &quot;$(ProjectDir)%(UiFile.Identity)&quot;" />
+	</Target>
+	
+	<!-- Appel qt-qrc sur chaque fichier "*.qrc" -->
+	<Target Name="QtQrc" AfterTargets="QtMoc" BeforeTargets="SelectClCompile" Condition="'@(QrcFile)'!=''">
+		<MakeDir Directories="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)" />
+		<Exec Command="$(QtBinDir)rcc.exe -o &quot;$(IntermediateOutputPath)generated\%(QrcFile.RelativeDir)rcc_%(QrcFile.Filename).cpp&quot; &quot;$(ProjectDir)%(QrcFile.Identity)&quot;" />
+
+		<!-- Ajoute le fichier en sortie -->
+		<ItemGroup>
+			<ClCompile Include="$(IntermediateOutputPath)generated\%(QrcFile.RelativeDir)rcc_%(QrcFile.Filename).cpp" />
+		</ItemGroup>
+	</Target>
+	
+	<!-- Add Qt library to link -->
+	<Target Name="AddQtLibDependencies" BeforeTargets="Link">
+		<ItemGroup>
+			<Link>
+
+			</Link>
+		</ItemGroup>
+		
+		<!-- Common files to copy -->
+		<Copy SourceFiles="$(QtBinDir)icudt53.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy SourceFiles="$(QtBinDir)icuin53.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy SourceFiles="$(QtBinDir)icuuc53.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		
+		<!-- PDB files to copy when configuration is Debug -->
+		<Copy Condition="'$(Configuration)'=='Debug'" SourceFiles="$(QtBinDir)..\plugins\platforms\qwindowsd.pdb" DestinationFolder="$(OutputPath)\platforms\" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtBluetooth)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Bluetoothd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtCLucene)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5CLucened.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtConcurrent)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Concurrentd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtCore)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Cored.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDeclarative)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Declaratived.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDesignerComponents)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5DesignerComponentsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDesigner)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Designerd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtGui)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Guid.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtHelp)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Helpd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtLocation)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Locationd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimediaQuick_p)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5MultimediaQuick_pd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimediaWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5MultimediaWidgetsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimedia)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Multimediad.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtNetwork)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Networkd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtNfc)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Nfcd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtOpenGL)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5OpenGLd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtPositioning)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Positioningd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtPrintSupport)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5PrintSupportd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQml)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Qmld.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickParticles)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5QuickParticlesd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickTest)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5QuickTestd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5QuickWidgetsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuick)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Quickd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtScriptTools)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5ScriptToolsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtScript)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Scriptd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSensors)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Sensorsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSerialPort)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5SerialPortd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSql)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Sqld.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSvg)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Svgd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtTest)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Testd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebChannel)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebChanneld.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebEngineWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebEngineWidgetsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebEngine)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebEngined.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebKitWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebKitWidgetsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebKit)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebKitd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebSockets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebSocketsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebView)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebViewd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Widgetsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWinExtras)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WinExtrasd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtXmlPatterns)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5XmlPatternsd.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtXml)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Xmld.pdb" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<!-- DLL files to copy when configuration is Debug -->
+		<Copy Condition="'$(Configuration)'=='Debug'" SourceFiles="$(QtBinDir)..\plugins\platforms\qwindowsd.dll" DestinationFolder="$(OutputPath)\platforms\" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtBluetooth)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Bluetoothd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtCLucene)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5CLucened.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtConcurrent)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Concurrentd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtCore)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Cored.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDeclarative)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Declaratived.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDesignerComponents)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5DesignerComponentsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDesigner)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Designerd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtGui)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Guid.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtHelp)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Helpd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtLocation)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Locationd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimediaQuick_p)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5MultimediaQuick_pd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimediaWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5MultimediaWidgetsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimedia)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Multimediad.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtNetwork)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Networkd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtNfc)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Nfcd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtOpenGL)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5OpenGLd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtPositioning)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Positioningd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtPrintSupport)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5PrintSupportd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQml)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Qmld.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickParticles)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5QuickParticlesd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickTest)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5QuickTestd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5QuickWidgetsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuick)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Quickd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtScriptTools)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5ScriptToolsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtScript)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Scriptd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSensors)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Sensorsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSerialPort)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5SerialPortd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSql)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Sqld.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSvg)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Svgd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtTest)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Testd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebChannel)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebChanneld.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebEngineWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebEngineWidgetsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebEngine)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebEngined.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebKitWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebKitWidgetsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebKit)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebKitd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebSockets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebSocketsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebView)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WebViewd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWidgets)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Widgetsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWinExtras)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5WinExtrasd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtXmlPatterns)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5XmlPatternsd.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtXml)'=='Debug|true'" SourceFiles="$(QtBinDir)Qt5Xmld.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<!-- DLL files to copy when configuration is Release -->
+		<Copy Condition="'$(Configuration)'=='Release'" SourceFiles="$(QtBinDir)..\plugins\platforms\qwindows.dll" DestinationFolder="$(OutputPath)\platforms\" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtBluetooth)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Bluetooth.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtCLucene)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5CLucene.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtConcurrent)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Concurrent.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtCore)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Core.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDeclarative)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Declarative.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDesignerComponents)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5DesignerComponents.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtDesigner)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Designer.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtGui)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Gui.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtHelp)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Help.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtLocation)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Location.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimediaQuick_p)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5MultimediaQuick_p.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimediaWidgets)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5MultimediaWidgets.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtMultimedia)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Multimedia.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtNetwork)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Network.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtNfc)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Nfc.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtOpenGL)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5OpenGL.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtPositioning)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Positioning.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtPrintSupport)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5PrintSupport.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQml)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Qml.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickParticles)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5QuickParticles.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickTest)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5QuickTest.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuickWidgets)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5QuickWidgets.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtQuick)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Quick.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtScriptTools)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5ScriptTools.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtScript)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Script.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSensors)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Sensors.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSerialPort)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5SerialPort.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSql)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Sql.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtSvg)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Svg.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtTest)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Test.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebChannel)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebChannel.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebEngineWidgets)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebEngineWidgets.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebEngine)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebEngine.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebKitWidgets)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebKitWidgets.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebKit)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebKit.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebSockets)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebSockets.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWebView)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WebView.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWidgets)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Widgets.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtWinExtras)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5WinExtras.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtXmlPatterns)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5XmlPatterns.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy Condition="'$(Configuration)|$(QtXml)'=='Release|true'" SourceFiles="$(QtBinDir)Qt5Xml.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+	</Target>	
+</Project>

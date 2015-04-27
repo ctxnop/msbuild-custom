@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework">
+	<Rule Name="ProjectSettings_qt" PageTemplate="tool" DisplayName="External libraries Settings" SwitchPrefix="/" Order="1">
+		<Rule.Categories>
+			<Category Name="qt-config" DisplayName="Qt" />
+		</Rule.Categories>
+		<Rule.DataSource>
+			<DataSource Persistence="ProjectFile" ItemType="" />
+		</Rule.DataSource>
+		<!--
+		<StringProperty Name="QtDir" DisplayName="QtDir" Description="Specify the Qt library directory" Category="qt-config" Subtype="folder" />
+		-->
+		<StringProperty Name="QtBinDir" DisplayName="QtBinDir" Description="Specify the Qt's bin directory" Category="qt-config" Subtype="folder" />
+		<StringProperty Name="QtIncludeDir" DisplayName="QtIncludeDir" Description="Specify the Qt's include directory" Category="qt-config" Subtype="folder" />
+		<StringProperty Name="QtLibDir" DisplayName="QtLibDir" Description="Specify the Qt's library directory" Category="qt-config" Subtype="folder" />
+		<BoolProperty Name="QtBluetooth" DisplayName="Bluetooth" Description="Use Qt5Bluetooth library." Category="qt-config" />
+		<BoolProperty Name="QtCLucene" DisplayName="CLucene" Description="Use Qt5CLucene library." Category="qt-config" />
+		<BoolProperty Name="QtConcurrent" DisplayName="Concurrent" Description="Use Qt5Concurrent library." Category="qt-config" />
+		<BoolProperty Name="QtCore" DisplayName="Core" Description="Use Qt5Core library." Category="qt-config" />
+		<BoolProperty Name="QtDeclarative" DisplayName="Declarative" Description="Use Qt5Declarative library." Category="qt-config" />
+		<BoolProperty Name="QtDesignerComponents" DisplayName="DesignerComponents" Description="Use Qt5DesignerComponents library." Category="qt-config" />
+		<BoolProperty Name="QtDesigner" DisplayName="Designer" Description="Use Qt5Designer library." Category="qt-config" />
+		<BoolProperty Name="QtGui" DisplayName="Gui" Description="Use Qt5Gui library." Category="qt-config" />
+		<BoolProperty Name="QtHelp" DisplayName="Help" Description="Use Qt5Help library." Category="qt-config" />
+		<BoolProperty Name="QtLocation" DisplayName="Location" Description="Use Qt5Location library." Category="qt-config" />
+		<BoolProperty Name="QtMultimediaQuick_p" DisplayName="MultimediaQuick_p" Description="Use Qt5MultimediaQuick_p library." Category="qt-config" />
+		<BoolProperty Name="QtMultimediaWidgets" DisplayName="MultimediaWidgets" Description="Use Qt5MultimediaWidgets library." Category="qt-config" />
+		<BoolProperty Name="QtMultimedia" DisplayName="Multimedia" Description="Use Qt5Multimedia library." Category="qt-config" />
+		<BoolProperty Name="QtNetwork" DisplayName="Network" Description="Use Qt5Network library." Category="qt-config" />
+		<BoolProperty Name="QtNfc" DisplayName="Nfc" Description="Use Qt5Nfc library." Category="qt-config" />
+		<BoolProperty Name="QtOpenGL" DisplayName="OpenGL" Description="Use Qt5OpenGL library." Category="qt-config" />
+		<BoolProperty Name="QtPositioning" DisplayName="Positioning" Description="Use Qt5Positioning library." Category="qt-config" />
+		<BoolProperty Name="QtPrintSupport" DisplayName="PrintSupport" Description="Use Qt5PrintSupport library." Category="qt-config" />
+		<BoolProperty Name="QtQml" DisplayName="Qml" Description="Use Qt5Qml library." Category="qt-config" />
+		<BoolProperty Name="QtQuickParticles" DisplayName="QuickParticles" Description="Use Qt5QuickParticles library." Category="qt-config" />
+		<BoolProperty Name="QtQuickTest" DisplayName="QuickTest" Description="Use Qt5QuickTest library." Category="qt-config" />
+		<BoolProperty Name="QtQuickWidgets" DisplayName="QuickWidgets" Description="Use Qt5QuickWidgets library." Category="qt-config" />
+		<BoolProperty Name="QtQuick" DisplayName="Quick" Description="Use Qt5Quick library." Category="qt-config" />
+		<BoolProperty Name="QtScriptTools" DisplayName="ScriptTools" Description="Use Qt5ScriptTools library." Category="qt-config" />
+		<BoolProperty Name="QtScript" DisplayName="Script" Description="Use Qt5Script library." Category="qt-config" />
+		<BoolProperty Name="QtSensors" DisplayName="Sensors" Description="Use Qt5Sensors library." Category="qt-config" />
+		<BoolProperty Name="QtSerialPort" DisplayName="SerialPort" Description="Use Qt5SerialPort library." Category="qt-config" />
+		<BoolProperty Name="QtSql" DisplayName="Sql" Description="Use Qt5Sql library." Category="qt-config" />
+		<BoolProperty Name="QtSvg" DisplayName="Svg" Description="Use Qt5Svg library." Category="qt-config" />
+		<BoolProperty Name="QtTest" DisplayName="Test" Description="Use Qt5Test library." Category="qt-config" />
+		<BoolProperty Name="QtWebChannel" DisplayName="WebChannel" Description="Use Qt5WebChannel library." Category="qt-config" />
+		<BoolProperty Name="QtWebEngineWidgets" DisplayName="WebEngineWidgets" Description="Use Qt5WebEngineWidgets library." Category="qt-config" />
+		<BoolProperty Name="QtWebEngine" DisplayName="WebEngine" Description="Use Qt5WebEngine library." Category="qt-config" />
+		<BoolProperty Name="QtWebKitWidgets" DisplayName="WebKitWidgets" Description="Use Qt5WebKitWidgets library." Category="qt-config" />
+		<BoolProperty Name="QtWebKit" DisplayName="WebKit" Description="Use Qt5WebKit library." Category="qt-config" />
+		<BoolProperty Name="QtWebSockets" DisplayName="WebSockets" Description="Use Qt5WebSockets library." Category="qt-config" />
+		<BoolProperty Name="QtWebView" DisplayName="WebView" Description="Use Qt5WebView library." Category="qt-config" />
+		<BoolProperty Name="QtWidgets" DisplayName="Widgets" Description="Use Qt5Widgets library." Category="qt-config" />
+		<BoolProperty Name="QtWinExtras" DisplayName="WinExtras" Description="Use Qt5WinExtras library." Category="qt-config" />
+		<BoolProperty Name="QtXmlPatterns" DisplayName="XmlPatterns" Description="Use Qt5XmlPatterns library." Category="qt-config" />
+		<BoolProperty Name="QtXml" DisplayName="Xml" Description="Use Qt5Xml library." Category="qt-config" />
+	</Rule>
+</ProjectSchemaDefinitions>
