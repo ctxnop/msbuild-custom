@@ -7,7 +7,9 @@
 	
 	<!-- Groupe de fichiers à compiler-->
 	<ItemGroup>
-		<MocFile Include="@(ClCompile)" />
+		<MocSource Include="**/*.qt.cpp" />
+		<MocHeader Include="**/*.qt.h" />
+		<MocHeader Include="**/*.qt.hpp" />
 	</ItemGroup>
 
 	<!-- Groupe de fichier UI -->
@@ -19,10 +21,15 @@
 	<ItemGroup>
 		<QrcFile Include="**/*.qrc" />
 	</ItemGroup>
+
+	<!-- Les DLL icu -->
+	<ItemGroup>
+		<IcuDll Include="$(QtBinDir)icu*.dll" />
+	</ItemGroup>
 	
 	<ItemDefinitionGroup>
 		<ClCompile>
-			<AdditionalIncludeDirectories>$(QtIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+			<AdditionalIncludeDirectories>$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\;$(QtIncludeDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
 		</ClCompile>
 		<Link>
 			<AdditionalLibraryDirectories>$(QtLibDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -116,39 +123,52 @@
 	</ItemDefinitionGroup>
 
 	<!-- Appel qt-moc sur chaque fichier à compiler -->
-	<Target Name="QtMoc" BeforeTargets="SelectClCompile" Condition="'@(MocFile)'!=''">
-		<MakeDir Directories="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)" />
-		<Exec Command="$(QtBinDir)moc.exe --no-notes -o &quot;$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)moc_%(MocFile.Filename).cpp&quot; &quot;$(ProjectDir)%(MocFile.Identity)&quot;" />
+	<Target Name="QtMocCpp" BeforeTargets="SelectClCompile" Condition="'@(MocSource)'!=''">
+		<MakeDir Directories="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(MocSource.RelativeDir)" />
+		<Exec Command="$(QtBinDir)moc.exe --no-notes -o &quot;$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(MocSource.RelativeDir)moc_cpp_%(MocSource.Filename).cpp&quot; &quot;$(ProjectDir)%(MocSource.Identity)&quot;" />
 		
 		<!-- Ajoute le fichier en sortie -->
-		<ItemGroup Condition="'@(MocFile)'!=''">
-			<ClCompile Include="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)moc_%(MocFile.Filename).cpp"/>
+		<ItemGroup Condition="'@(MocSource)'!=''">
+			<ClCompile Include="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(MocSource.RelativeDir)moc_cpp_%(MocSource.Filename).cpp"/>
+		</ItemGroup>
+	</Target>
+
+	<Target Name="QtMocHpp" BeforeTargets="SelectClCompile" Condition="'@(MocHeader)'!=''">
+		<MakeDir Directories="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(MocHeader.RelativeDir)" />
+		<Exec Command="$(QtBinDir)moc.exe --no-notes -o &quot;$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(MocHeader.RelativeDir)moc_hpp_%(MocHeader.Filename).cpp&quot; &quot;$(ProjectDir)%(MocHeader.Identity)&quot;" />
+
+		<!-- Ajoute le fichier en sortie -->
+		<ItemGroup Condition="'@(MocHeader)'!=''">
+			<ClCompile Include="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(MocHeader.RelativeDir)moc_hpp_%(MocHeader.Filename).cpp"/>
 		</ItemGroup>
 	</Target>
 	
 	<!-- Appel qt-uic sur chaque fichier "*.ui" -->
 	<Target Name="QtUic" AfterTargets="QtMoc" BeforeTargets="SelectClCompile" Condition="'@(UiFile)'!=''">
-		<MakeDir Directories="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)" />
-		<Exec Command="$(QtBinDir)uic.exe -o &quot;$(ProjectDir)%(UiFile.RelativeDir)ui_%(UiFile.Filename).h&quot; &quot;$(ProjectDir)%(UiFile.Identity)&quot;" />
+		<MakeDir Directories="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(UiFile.RelativeDir)" />
+		<Exec Command="$(QtBinDir)uic.exe -o &quot;$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(UiFile.RelativeDir)ui_%(UiFile.Filename).h&quot; &quot;$(ProjectDir)%(UiFile.Identity)&quot;" />
 	</Target>
 	
 	<!-- Appel qt-qrc sur chaque fichier "*.qrc" -->
 	<Target Name="QtQrc" AfterTargets="QtMoc" BeforeTargets="SelectClCompile" Condition="'@(QrcFile)'!=''">
-		<MakeDir Directories="$(IntermediateOutputPath)generated\%(MocFile.RelativeDir)" />
-		<Exec Command="$(QtBinDir)rcc.exe -o &quot;$(IntermediateOutputPath)generated\%(QrcFile.RelativeDir)rcc_%(QrcFile.Filename).cpp&quot; &quot;$(ProjectDir)%(QrcFile.Identity)&quot;" />
+		<MakeDir Directories="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(QrcFile.RelativeDir)" />
+		<Exec Command="$(QtBinDir)rcc.exe -o &quot;$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(QrcFile.RelativeDir)rcc_%(QrcFile.Filename).cpp&quot; &quot;$(ProjectDir)%(QrcFile.Identity)&quot;" />
 
 		<!-- Ajoute le fichier en sortie -->
 		<ItemGroup>
-			<ClCompile Include="$(IntermediateOutputPath)generated\%(QrcFile.RelativeDir)rcc_%(QrcFile.Filename).cpp" />
+			<ClCompile Include="$(SolutionDir)tmp\$(ProjectName)-$(Configuration)-$(PlatformTarget)\generated\%(QrcFile.RelativeDir)rcc_%(QrcFile.Filename).cpp" />
 		</ItemGroup>
 	</Target>
 	
 	<!-- Add Qt library to link -->
 	<Target Name="AddQtLibDependencies" BeforeTargets="Link">
 		<!-- Common files to copy -->
-		<Copy SourceFiles="$(QtBinDir)icudt53.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
-		<Copy SourceFiles="$(QtBinDir)icuin53.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
-		<Copy SourceFiles="$(QtBinDir)icuuc53.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<!--
+		<Copy SourceFiles="$(QtBinDir)icudt*.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy SourceFiles="$(QtBinDir)icuin*.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		<Copy SourceFiles="$(QtBinDir)icuuc*.dll" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
+		-->
+		<Copy SourceFiles="%(IcuDll.Identity)" DestinationFolder="$(OutputPath)" ContinueOnError="true" />
 		
 		<!-- PDB files to copy when configuration is Debug -->
 		<Copy Condition="'$(Configuration)'=='Debug'" SourceFiles="$(QtBinDir)..\plugins\platforms\qwindowsd.pdb" DestinationFolder="$(OutputPath)\platforms\" ContinueOnError="true" />
